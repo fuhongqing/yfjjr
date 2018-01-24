@@ -34,7 +34,7 @@
   text-align: center;
   color: #2c3e50;
   /*margin-top: 60px;*/
-  height: 6.17rem;
+  height: 6.67rem;
   overflow: auto;
   font-size: 14px;
 }
