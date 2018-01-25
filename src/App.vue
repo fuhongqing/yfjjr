@@ -12,7 +12,7 @@
     data(){
       return {
         urlDev: 'localhost',
-        urlBuild: 'daili.ehaofang.com:8099'
+        urlBuild: 'qudao.ehaofang.com:8089'
       }
   },
   methods: {
@@ -21,7 +21,7 @@
     }
   },
   created() {
-    window.serverUrl = this.urlDev;
+    window.serverUrl = this.urlBuild;
   }
   }
 </script>
@@ -64,5 +64,8 @@ img{
 /*表单placeholder文字颜色*/
 input::-webkit-input-placeholder{
   color:#D6D6D6!important;
+}
+input:focus{
+  outline: none;
 }
 </style>

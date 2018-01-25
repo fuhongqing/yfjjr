@@ -9,7 +9,6 @@ import VueResource from 'vue-resource'
 Vue.use(VueResource);
 
 Vue.config.productionTip = false;
-
 //依据设计图视口尺寸动态设置根标签字体大小
 document.documentElement.style.fontSize = document.documentElement.clientWidth / 3.75 + 'px';
 

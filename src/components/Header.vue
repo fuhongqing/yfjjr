@@ -2,139 +2,133 @@
   <div id="my_list">
     <header>
       <div id="search">
-        <img src="../assets/img/search.png" alt=""/>
-        <input type="text" placeholder="项目名称／客户姓名／号码后4位"/>
+        <img @click="search()" src="../assets/img/search.png" alt=""/>
+        <input type="text" v-model="searchStr" placeholder="项目名称／客户姓名／号码后4位"/>
       </div>
       <div id="total">
-        <div><span>今日报备:</span><span></span>12组</div>
-        <div><span>全部：</span><span>123</span></div>
+        <div><span>今日报备:</span><span v-text="dataResult.todaybaobei"></span></div>
+        <div><span>全部：</span><span v-text="parseFloat(dataResult.noDK)+parseFloat(dataResult.noCJ)+parseFloat(dataResult.dfy)+parseFloat(dataResult.fy)"></span></div>
       </div>
     </header>
     <section>
       <div id="type">
         <ul>
           <li>未带看</li>
-          <li>90</li>
+          <li v-text="dataResult.noDK"></li>
         </ul>
         <ul>
           <li>未成交</li>
-          <li>20</li>
+          <li v-text="dataResult.noCJ"></li>
         </ul>
         <ul>
           <li>未发佣</li>
-          <li>9</li>
+          <li v-text="dataResult.dfy"></li>
         </ul>
         <ul>
           <li>已发佣</li>
-          <li>4</li>
+          <li v-text="dataResult.fy"></li>
         </ul>
       </div>
-      <div class="listItems">
+      <div class="listItems" v-for="(page,index) in pageLists" @click="jump()">
         <div class="customs">
           <ul>
-            <li>张三</li>
-            <li>137****0975</li>
+            <li v-if="page.HouseSaleType>=3" v-text="page.cjCustomerName"></li>
+            <li v-else v-text="page.FullName"></li>
+            <li v-if="page.HouseSaleType>=3" v-text="page.cjCustomerPhone"></li>
+            <li v-else v-text="page.PhoneNum"></li>
           </ul>
-          <a>自驾</a>
+          <a v-if="(page.HouseSaleType)==1" v-text="page.lookcount+'访'"></a>
+          <a v-else-if="page.HouseSaleType==3" v-text="大定"></a>
+          <a v-else-if="page.HouseSaleType>3&page.HouseSaleType!=9&page.ReviewState==null" v-text="签约"></a>
+          <a v-else-if="page.HouseSaleType>3&page.HouseSaleType!=9&page.ReviewState==6" v-text="已发"></a>
+          <a v-else v-text="(page.Shuttle.trim())==1?'自驾':'班车'"></a>
         </div>
         <div class="projects">
           <ul>
-            <li>金地家园</li>
-            <li>A701</li>
+            <li v-if="page.HouseSaleType==3||page.HouseSaleType>3&page.HouseSaleType!=9&page.ReviewState==null" v-text="page.houseName"></li>
+            <li v-if="page.HouseSaleType>3&page.HouseSaleType!=9&page.ReviewState==6" v-text="'佣'+page.CommissionAmount+'元'"></li>
+            <li v-else v-text="page.PropertyName"></li>
           </ul>
           <ul>
-            <li>张三俗</li>
-            <li>02-04</li>
+            <li v-text="page.memberName"></li>
+            <li v-text="page.Createtime"></li>
           </ul>
         </div>
       </div>
-      <div class="listItems">
-        <div class="customs">
-          <ul>
-            <li>张三</li>
-            <li>137****0975</li>
-          </ul>
-          <a>自驾</a>
-        </div>
-        <div class="projects">
-          <ul>
-            <li>金地家园</li>
-            <li>A701</li>
-          </ul>
-          <ul>
-            <li>张三俗</li>
-            <li>02-04</li>
-          </ul>
-        </div>
-      </div>
-      <div id="more">
+      <div id="more" @click="loadMore()" v-show="isMoreShow">
         <p>超过30天的报备</p>
         <img src="../assets/img/right.png" alt=""/>
       </div>
+      <footer>
+        <ul>
+          <li><img src="../assets/img/client.png" alt=""/></li>
+          <li>首页</li>
+        </ul>
+        <ul>
+          <li><img src="../assets/img/client.png" alt=""/></li>
+          <li>客户</li>
+        </ul>
+        <ul>
+          <li><img src="../assets/img/client.png" alt=""/></li>
+          <li>设置</li>
+        </ul>
+      </footer>
     </section>
-    <footer>
-      <ul>
-        <li><img src="../assets/img/client.png" alt=""/></li>
-        <li>客户</li>
-      </ul>
-      <ul>
-        <li><img src="../assets/img/client.png" alt=""/></li>
-        <li>客户</li>
-      </ul>
-      <ul>
-        <li><img src="../assets/img/client.png" alt=""/></li>
-        <li>客户</li>
-      </ul>
-    </footer>
   </div>
 </template>
 
 <script>
 //  import kflHeader from '@/components/Header'
 export default {
-      name: 'yhfHeader'
-//    components: {
-//      'myHeader': kflHeader,
-//      'myFooter': kflFooter
-//    },
-//    data() {
-//    return {
-//      order: {},
-//      result: null
-//    }
-//  },
-//  methods: {
-//    jump: function () {
-//      this.$parent.jump('/detail');
-//    },
-//    submitOrder: function () {
-//      console.log(this.order);
-//      this.$http.jsonp('http://'+serverUrl+'/data/order_add.php', { params: this.order }).then(function (response) {
-//        console.log(response.data);
-//        if (response.data) {
-//          if (response.data[0].msg == 'succ') {
-//            this.result = "下单成功，订单编号为:" + response.data[0].oid;
-//            localStorage.setItem('phone', this.order.phone);
-//          }
-//          else {
-//            this.result = "下单失败";
-//          }
-//          console.log('result is ' + this.result);
-//
-//        }
-//      })
-//    }
-//  }
-//  ,
-//  created() {
-//    console.log(this.$route.params.id);
-//    this.order = { did: this.$route.params.id };
-//
-//  }
+      name: 'yhfHeader',
+      data(){
+         return{
+           searchStr:'',
+           pageSum:0,//总页数
+           pageLists:[],//列表数据
+           dataResult:[],//数据统计
+           isMoreShow:true//30天报备是否显示
+         }
+      },
+      created(){//, { jsonp: 'callback' }
+        this.$http.get('http://'+serverUrl+'/efangmem/customer/allCustomerList?agencyID=5886&pageNum=1').then(function(response){
+          //console.log(response.body.data);
+          this.pageSum=response.body.data.pageSum;
+          this.pageLists=response.body.data.page;
+          },
+      function(error){
+        console.log(error);
+      });
+        this.$http.get('http://'+serverUrl+'/efangmem/customer/customerCount?agencyID=5886').then(function(response){
+          this.dataResult=response.body.data;
+        },function(error){
+          console.log(error);
+        });
+      },
+      methods:{
+        loadMore(){
+          this.isMoreShow=false;
+          this.$http.get('http://'+serverUrl+'/efangmem/customer/mouthAgoCustomerper?agencyID=5886&pageNum=1').then(function(response){
+             this.pageLists=response.body.data.page;
+          },function(error){
+            console.log(error);
+          })
+        },
+        jump(){
+          this.$parent.jump('/detail');
+        },
+        search(){
+          this.$http.get('http://'+serverUrl+'/efangmem/customer/allCustomerList?agencyID=5886&pageNum=1&search='+this.searchStr).then(function(response){
+            this.pageLists=response.body.data.page;
+          },function(error){
+            console.log(error);
+          })
+        }
+      }
 }
 </script>
-
-<style>
+<!--lang="less"-->
+<style scoped>
   #my_list{
     display: flex;
     flex-direction: column;
@@ -173,6 +167,7 @@ export default {
     padding-bottom: .45rem;
     padding-top: .15rem;
     flex: 1;
+    margin-bottom: .66rem;
   }
   #type{
     display: flex;
@@ -230,6 +225,7 @@ export default {
   }
   .customs>ul>li{
     margin-right: .15rem;
+    text-align: left;
   }
   .projects{
     color: #888888;
@@ -255,6 +251,10 @@ export default {
     vertical-align: middle;
   }
   footer{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
     min-height: .5rem;
     display: flex;
     background: #fff;
